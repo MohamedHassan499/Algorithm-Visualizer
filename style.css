@@ -2,35 +2,25 @@ td{
     text-align: center;
     width: 20px; 
     height: 20px;
+    transition-duration: 0.3s;
 }
 
-
 center{
-    margin-top: 200px;
+    margin-top: 150px;
 }
 
 table{
     border: 1px solid #6bd2eb;
     table-layout: fixed;
-
+    width: 100%;
+    margin: 0px;
     text-align: center;
-}
-
-.visited{
-    animation-name: visited;
-    animation-duration: 0.5s;
 }
   
 table {
     border-collapse: collapse;
 }
 
-@keyframes visited{
-    to {background-color: red;}
-}
-@keyframes shortest-path{
-    to {background-color: yellow;}
-}
 /* 
 .animate{
     animation-name: example;
