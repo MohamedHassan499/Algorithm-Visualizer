@@ -1,0 +1,32 @@
+td{
+    text-align: center;
+    width: 20px; 
+    height: 20px;
+    transition-duration: 0.3s;
+    animation-direction: alternate;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+    animation-play-state: running;
+}
+
+center{
+    margin-top: 150px;
+}
+
+table{
+    border: 1px solid #6bd2eb;
+    table-layout: fixed;
+    width: 100%;
+    margin: 0px;
+    text-align: center;
+    
+    border-collapse: collapse;
+}
+  
+.block{
+    background-color: "black";
+}
+
+.unvisited{
+    background-color: "white";
+}
