@@ -3,6 +3,10 @@ td{
     width: 20px; 
     height: 20px;
     transition-duration: 0.3s;
+    animation-direction: alternate;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+    animation-play-state: running;
 }
 
 center{
@@ -15,14 +19,14 @@ table{
     width: 100%;
     margin: 0px;
     text-align: center;
-}
-  
-table {
+    
     border-collapse: collapse;
 }
+  
+.block{
+    background-color: "black";
+}
 
-/* 
-.animate{
-    animation-name: example;
-    animation-duration: 5s;
-} */
+.unvisited{
+    background-color: "white";
+}

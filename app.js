@@ -1,75 +1,35 @@
-let lastCell = '';
+var positionRowStart, positionColumnStart;
+var positionRowEnd, positionColumnEnd;
 
-let stillClicking = false;
+let isToggling = false;
 
-// function mouseDown(){
-//   stillClicking = true;
-//   lastCell = 'x'
-//   console.log(stillClicking)
-// }
-
-// function mouseUp(){
-//   stillClicking = false;
-//   lastCell = '';
-//   console.log(stillClicking)
-
-// }
-
-// function hi(){
-//   if(stillClicking){
-//     console.log('hi');
-//   }
-// }
-
-function colorCell(event) {
-  if(lastCell != event.target.id && stillClicking){
-  event.srcElement.style.backgroundColor =
-    event.srcElement.style.backgroundColor === "black" ? "white" : "black";
+function enableToggle(e) {
+  console.log(e.target.id)
+  isToggling = true;
+  let table = document.getElementById('board')
+  if (e.target === table) {
+    toggle(e);
   }
-  lastCell = event.target.id;
+}
+
+function disableToggle() {
+  console.log('disableToggle')
+  isToggling = false;
+}
+
+function toggle(e) {
+  if (isToggling === false) {
+    return;
+  }
+  e.target.style.backgroundColor = e.target.style.backgroundColor == "black" ? "white" : "black"
 }
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-var positionRowStart, positionColumnStart;
-var positionRowEnd, positionColumnEnd;
-
 function BFS() {
   let levels = 1;
-  const NUM_ROWS = 10,
-    NUM_COLUMNS = 10;
+  const NUM_ROWS = 30,
+    NUM_COLUMNS = 60;
 
   let delay = 0.5;
 
@@ -113,13 +73,17 @@ function BFS() {
           parent[currentNode] = toStartNode;
 
           toAnimateNodes.push(currentNode);
-          document.getElementById(currentNode).style.backgroundColor =
+
+          setTimeout(() => {
+            document.getElementById(currentNode).style.backgroundColor =
             "#49a5d7";
+          }, 0)
+
 
           document.getElementById(
             currentNode
           ).style.transitionDelay = `${delay}s`;
-          delay += 0.05;
+          delay += 0.005;
 
           if (currentNode == `${positionRowEnd}-${positionColumnEnd}`) {
             colorShortestPath(toAnimateNodes, parent, start, delay);
@@ -169,8 +133,8 @@ document.getElementById("dfs").addEventListener("click", () => {
 });
 
 function makeDFS(row, column, dx, dy, table, visited, delay) {
-  const NUM_ROWS = 10,
-    NUM_COLUMNS = 10;
+  const NUM_ROWS = 30,
+    NUM_COLUMNS = 60;
   visited[`${row}-${column}`] = true;
   if (visited[positionRowEnd + "-" + positionColumnEnd] == true) return;
 
@@ -197,25 +161,35 @@ function makeDFS(row, column, dx, dy, table, visited, delay) {
   }
 }
 
-function initializeBoard() {
+
+window.onload = function(){
+
   let table = document.getElementById("board");
-  const NUM_ROWS = 10,
-    NUM_COLUMNS = 10;
+  table.onmousedown = enableToggle;
+  const NUM_ROWS = 30,
+    NUM_COLUMNS = 60;
   table.innerHTML = "";
   for (let i = 1; i <= NUM_ROWS; ++i) {
     let newRow = document.createElement("tr");
     for (let j = 1; j <= NUM_COLUMNS; ++j) {
       let newCell = document.createElement("td");
+
+
       newCell.classList.add('empty')
+      //newCell.setAttribute('onmousedown', 'return false');
       newCell.setAttribute("id", i + "-" + j);
-      newCell.setAttribute("onclick", "colorCell(event)");
-      newCell.setAttribute("onmousemove", "colorCell(event)");
-      newCell.setAttribute("onmouseup", "mouseUp()");
-      newCell.setAttribute("onmousedown", "mouseDown()");
+      newCell.onmouseenter = toggle;
+
+      newCell.setAttribute('ondrop', 'drop(event)'); 
+      newCell.setAttribute('ondragover', 'allowDrop(event)');
+
+
       newRow.appendChild(newCell);
     }
     table.appendChild(newRow);
   }
+
+  table.onmouseup = disableToggle;
 
   positionRowStart = parseInt(1 + Math.random() * NUM_ROWS);
   positionColumnStart = parseInt(1 + Math.random() * NUM_COLUMNS);
@@ -234,71 +208,47 @@ function initializeBoard() {
     let sourceImg = document.createElement('img');
     sourceImg.setAttribute('src', 'source.png')
     sourceImg.classList.add('source')
+    sourceImg.setAttribute('id', 'source')
+    sourceImg.setAttribute('draggable', 'true')
+    sourceImg.setAttribute('ondragstart', 'drag(event)')
+    
 
     let targetImg = document.createElement('img');
     targetImg.setAttribute('src', 'target.png')
+
+    
     targetImg.classList.add('target')
+    targetImg.setAttribute('id', 'target')
+    targetImg.setAttribute('draggable', 'true')
+    targetImg.setAttribute('ondragstart', 'drag(event)')
+
 
   document.getElementById(startCell).appendChild(sourceImg);
   document.getElementById(endCell).appendChild(targetImg);
   
 }
 
-initializeBoard();
 
 
 
 
-const fill = document.querySelector('.source');
-const empties = document.querySelectorAll('.empty');
 
-// Fill listeners
-fill.addEventListener('dragstart', dragStart);
-fill.addEventListener('dragend', dragEnd);
 
-// Loop through empty boxes and add listeners
-for (const empty of empties) {
-  empty.addEventListener('dragover', dragOver);
-  empty.addEventListener('dragenter', dragEnter);
-  empty.addEventListener('dragleave', dragLeave);
-  empty.addEventListener('drop', dragDrop);
+
+
+function allowDrop(ev) {
+  ev.preventDefault();
 }
 
-
-
-
-
-
-function dragStart() {
-  setTimeout(() => (this.className = 'invisible'), 0);
+function drag(ev) {
+  ev.dataTransfer.setData("text", ev.target.id);
 }
 
-function dragEnd(e) {
-  this.className = 'fill';
-  let id = document.getElementsByClassName('fill')[0].parentElement.id
-  console.log(id)
-  id = id.split('-')
-  positionRowStart = id[0], positionColumnStart = id[1]
-  console.log(positionRowStart, positionColumnStart)
+function drop(ev) {
+  ev.preventDefault();
+  console.log(ev.target.id)
+  let newPosition = ev.target.id.split('-')
+  positionRowStart = newPosition[0], positonColumnStart = newPosition[1]
+  var data = ev.dataTransfer.getData("text");
+  ev.target.appendChild(document.getElementById(data));
 }
-
-function dragOver(e) {
-  e.preventDefault();
-}
-
-function dragEnter(e) {
-  e.preventDefault();
-  this.className += ' hovered';
-}
-
-function dragLeave() {
-  this.className = 'empty';
-}
-
-function dragDrop() {
-  this.className = 'empty';
-  this.append(fill);
-}
-
-
-
